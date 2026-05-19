@@ -1,10 +1,14 @@
 import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @Post('login')
   login(@Body() body: { email: string; password: string }) {
@@ -15,5 +19,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   me(@Request() req: any) {
     return req.user;
+  }
+
+  @Get('seed')
+  async seed() {
+    await this.usersService.seedAdmins();
+    return { message: '✅ Usuarios admin creados correctamente' };
   }
 }
