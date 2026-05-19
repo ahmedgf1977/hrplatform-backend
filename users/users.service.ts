@@ -16,7 +16,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.repo.find({ select: ['id','name','email','role','company','active','lastLogin','createdAt'] });
+    return this.repo.find({ select: { id:true, name:true, email:true, role:true, company:true, active:true, lastLogin:true, createdAt:true } });
   }
 
   async create(data: Partial<User>) {
