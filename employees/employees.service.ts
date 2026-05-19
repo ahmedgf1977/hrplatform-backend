@@ -47,7 +47,7 @@ export class EmployeesService {
         const saved = await this.repo.save(e);
         created.push(saved);
       } catch (err) {
-        errors.push({ data: emp, error: err.message });
+        errors.push({ data: emp, error: (err as any).message });
       }
     }
     return { created: created.length, errors: errors.length, details: errors };
