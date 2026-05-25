@@ -36,10 +36,31 @@ export class User {
   department: string;
 
   @Column({ nullable: true })
+  division: string;
+
+  @Column({ nullable: true })
   manager: string;
 
   @Column({ nullable: true })
   phone: string;
+
+  @Column({ nullable: true })
+  costCenter: string;
+
+  @Column({ nullable: true })
+  contractType: string;
+
+  @Column({ nullable: true })
+  schedule: string;
+
+  @Column({ nullable: true })
+  startDate: string;
+
+  @Column({ nullable: true })
+  vacationDays: number;
+
+  @Column({ nullable: true })
+  workLocation: string;
 
   @CreateDateColumn()
   createdAt: Date;
