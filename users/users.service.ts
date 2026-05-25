@@ -1,43 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './user.entity';
-import * as bcrypt from 'bcryptjs';
+import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
-@Injectable()
-export class UsersService {
+@Controller('auth')
+export class AuthController {
   constructor(
-    @InjectRepository(User)
-    private repo: Repository<User>,
+    private authService: AuthService,
+    private usersService: UsersService,
   ) {}
 
-  findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
+  @Post('login')
+  login(@Body() body: { email: string; password: string }) {
+    return this.authService.login(body.email, body.password);
   }
 
-  findAll() {
-    return this.repo.find({ select: { id:true, name:true, email:true, role:true, company:true, active:true, lastLogin:true, createdAt:true } });
+  @Post('register')
+  register(@Body() body: { name: string; email: string; password: string; role?: string; company?: string }) {
+    return this.usersService.create({
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      role: body.role || 'employee',
+      company: body.company || 'zavix',
+    });
   }
 
-  async create(data: Partial<User>) {
-    const hashed = await bcrypt.hash(data.password, 10);
-    const user = this.repo.create({ ...data, password: hashed });
-    return this.repo.save(user);
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@Request() req: any) {
+    return req.user;
   }
 
-  async updateLastLogin(id: number) {
-    await this.repo.update(id, { lastLogin: new Date() });
+  @Get('seed')
+  async seed() {
+    await this.usersService.seedAdmins();
+    return { message: '✅ Usuarios admin creados correctamente' };
   }
-
-  async seedAdmins() {
-    const admins = [
-      { name:'Brenda Álvarez', email:'brenda.alvarez@zavixbrands.com', password:'hrplatform2025', role:'admin',      company:'zavix' },
-      { name:'Ahmed García',   email:'ahmed.garcia@zavixbrands.com',   password:'hrplatform2025', role:'superadmin', company:'zavix' },
-    ];
-    for (const admin of admins) {
-      const exists = await this.findByEmail(admin.email);
-      if (!exists) await this.create(admin);
-    }
-    console.log('✅ Usuarios admin creados');
-  }
+}
 }
