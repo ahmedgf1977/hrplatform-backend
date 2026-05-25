@@ -26,6 +26,21 @@ export class User {
   @Column({ nullable: true })
   employeeId: number;
 
+  @Column({ nullable: true })
+  position: string;
+
+  @Column({ nullable: true })
+  area: string;
+
+  @Column({ nullable: true })
+  department: string;
+
+  @Column({ nullable: true })
+  manager: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
