@@ -25,12 +25,19 @@ export class AuthService {
       position: user.position,
       area: user.area,
       department: user.department,
+      division: user.division,
       manager: user.manager,
       phone: user.phone,
+      costCenter: user.costCenter,
+      contractType: user.contractType,
+      schedule: user.schedule,
+      startDate: user.startDate,
+      vacationDays: user.vacationDays,
+      workLocation: user.workLocation,
     };
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
+     user: {
         id: user.id,
         name: user.name,
         email: user.email,
@@ -39,8 +46,15 @@ export class AuthService {
         position: user.position,
         area: user.area,
         department: user.department,
+        division: user.division,
         manager: user.manager,
         phone: user.phone,
+        costCenter: user.costCenter,
+        contractType: user.contractType,
+        schedule: user.schedule,
+        startDate: user.startDate,
+        vacationDays: user.vacationDays,
+        workLocation: user.workLocation,
       },
     };
   }
