@@ -15,6 +15,17 @@ export class AuthController {
     return this.authService.login(body.email, body.password);
   }
 
+  @Post('register')
+  register(@Body() body: { name: string; email: string; password: string; role?: string; company?: string }) {
+    return this.usersService.create({
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      role: body.role || 'employee',
+      company: body.company || 'zavix',
+    });
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@Request() req: any) {
