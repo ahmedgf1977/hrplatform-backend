@@ -57,7 +57,7 @@ export class EmployeesService {
       }
     } catch (err) {
       // Si falla la creación del usuario, no afecta al employee
-      console.error(`⚠️ No se pudo crear usuario para ${saved.email}:`, err.message);
+      console.error(`⚠️ No se pudo crear usuario para ${saved.email}:`, (err as any).message);
     }
 
     return saved;
@@ -84,7 +84,7 @@ export class EmployeesService {
         });
       }
     } catch (err) {
-      console.error(`⚠️ No se pudo sincronizar usuario:`, err.message);
+      console.error(`⚠️ No se pudo sincronizar usuario:`, (err as any).message);
     }
 
     return updated;
@@ -99,7 +99,7 @@ export class EmployeesService {
       const user = await this.usersService.findByEmail(emp.email);
       if (user) await this.usersService.update(user.id, { active: false });
     } catch (err) {
-      console.error(`⚠️ No se pudo desactivar usuario:`, err.message);
+      console.error(`⚠️ No se pudo desactivar usuario:`, (err as any).message);
     }
 
     return { message: `Colaborador ${emp.firstName} dado de baja` };
