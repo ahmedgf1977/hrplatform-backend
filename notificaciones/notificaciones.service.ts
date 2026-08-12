@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
 import { NotificacionDto } from './notificacion.dto';
 
 const ESTADO_LABEL: Record<string, string> = {
@@ -14,21 +13,7 @@ const ESTADO_LABEL: Record<string, string> = {
 @Injectable()
 export class NotificacionesService {
   private readonly logger = new Logger(NotificacionesService.name);
-  private transporter: nodemailer.Transporter;
-
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // STARTTLS en vez de SSL directo (465)
-      requireTLS: true,
-      connectionTimeout: 10000,
-      auth: {
-        user: process.env.GMAIL_USER, // ahmed.garcia@zavixbrands.com
-        pass: process.env.GMAIL_APP_PASSWORD, // los 16 caracteres, sin espacios
-      },
-    });
-  }
+  private readonly RESEND_API_URL = 'https://api.resend.com/emails';
 
   private construirMensaje(data: NotificacionDto) {
     const { tipo, ticket } = data;
@@ -87,17 +72,28 @@ export class NotificacionesService {
         throw new Error('El ticket no tiene userEmail');
       }
       const { subject, body } = this.construirMensaje(data);
+      const fromAddress = process.env.RESEND_FROM_ALIAS || 'soporte@zavixbrands.com';
 
-      await this.transporter.sendMail({
-        from:
-          '"Mesa de Ayuda TI — Zavix Brands" <' +
-          (process.env.GMAIL_FROM_ALIAS || process.env.GMAIL_USER) +
-          '>',
-        replyTo: process.env.GMAIL_FROM_ALIAS || process.env.GMAIL_USER,
-        to: data.ticket.userEmail,
-        subject,
-        text: body,
+      const res = await fetch(this.RESEND_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: `Mesa de Ayuda TI — Zavix Brands <${fromAddress}>`,
+          to: [data.ticket.userEmail],
+          reply_to: fromAddress,
+          subject,
+          text: body,
+        }),
       });
+
+      const resultJson: any = await res.json();
+
+      if (!res.ok) {
+        throw new Error(resultJson?.message || `Resend respondió HTTP ${res.status}`);
+      }
 
       return { ok: true, enviado_a: data.ticket.userEmail };
     } catch (err: any) {
