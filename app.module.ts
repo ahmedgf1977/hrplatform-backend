@@ -8,12 +8,11 @@ import { VacationsModule } from './vacations/vacations.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { EvaluationsModule } from './evaluations/evaluations.module';
-
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 @Module({
   imports: [
     // Config global — lee variables de entorno
     ConfigModule.forRoot({ isGlobal: true }),
-
     // Base de datos PostgreSQL
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -26,7 +25,6 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
       }),
       inject: [ConfigService],
     }),
-
     // Módulos de la aplicación
     AuthModule,
     UsersModule,
@@ -35,6 +33,7 @@ import { EvaluationsModule } from './evaluations/evaluations.module';
     AnnouncementsModule,
     OnboardingModule,
     EvaluationsModule,
+    NotificacionesModule,
   ],
 })
 export class AppModule {}
