@@ -18,7 +18,11 @@ export class NotificacionesService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // STARTTLS en vez de SSL directo (465)
+      requireTLS: true,
+      connectionTimeout: 10000,
       auth: {
         user: process.env.GMAIL_USER, // ahmed.garcia@zavixbrands.com
         pass: process.env.GMAIL_APP_PASSWORD, // los 16 caracteres, sin espacios
