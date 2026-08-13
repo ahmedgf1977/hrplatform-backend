@@ -68,6 +68,7 @@ export class NotificacionesService {
 
   async enviar(data: NotificacionDto): Promise<{ ok: boolean; error?: string; enviado_a?: string }> {
     try {
+      this.logger.log(`Petición recibida — tipo: ${data?.tipo}, folio: ${data?.ticket?.folio}, userEmail: ${data?.ticket?.userEmail || 'SIN EMAIL'}`);
       if (!data.ticket || !data.ticket.userEmail) {
         throw new Error('El ticket no tiene userEmail');
       }
@@ -94,6 +95,10 @@ export class NotificacionesService {
       if (!res.ok) {
         throw new Error(resultJson?.message || `Resend respondió HTTP ${res.status}`);
       }
+
+      this.logger.log(
+        `Notificación "${data.tipo}" enviada a ${data.ticket.userEmail} — Resend id: ${resultJson?.id || 'sin id'}`,
+      );
 
       return { ok: true, enviado_a: data.ticket.userEmail };
     } catch (err: any) {
